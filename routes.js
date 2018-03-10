@@ -11,6 +11,18 @@ module.exports = (app, latlon) => {
     }
   }
 
+  app.get("/api/locate/city/:api_key/:lat/:long", (req, res)=>{
+    if(checkAPI(req.params.api_key)){
+      api_address = "https://www.googleapis.com/geolocation/v1/geolocate?key="+process.env.GOOGLE_API_KEY
+      fetch(api_address)
+      .then((response)=>response.json())
+      .then((json)=>res.send(json))
+    }else{
+      res.status(400);
+      res.send('Forbidden');
+    }
+  })
+
   app.get("/api/track/city/:api_key/:city", (req, res)=>{
     if(checkAPI(req.params.api_key)){
       city = req.params.city.replace(" ", "-")
@@ -21,7 +33,8 @@ module.exports = (app, latlon) => {
         console.log(json)
       })
     }else{
-      res.send("API key not valid")
+      res.status(400);
+      res.send('Forbidden');
     }
   })
 

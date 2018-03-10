@@ -1,7 +1,45 @@
-module.exports = (app) => {
+module.exports = (app, latlon) => {
   const fetch = require( 'node-fetch');
   const bodyParser = require('body-parser');
   require('dotenv').config();
+
+  checkAPI = (api) =>{
+    if(api === process.env.REMOTE_ACCESS_KEY){
+      return True;
+    } else{
+      return False;
+    }
+  }
+
+  app.get("/api/track/city/:api_key/:city", (req, res)=>{
+    if(checkAPI(req.params.api_key)){
+      city = req.params.city.replace(" ", "-")
+      api_address = "https://maps.googleapis.com/maps/api/geocode/json?address=" + city
+      fetch(api_address).then((response)=>response.json()).then((json)=>{
+        console.log(json.results[0].geometry.location.lat)
+        console.log(json.results[0].geometry.location.lng)
+        console.log(json)
+      })
+    }else{
+      res.send("API key not valid")
+    }
+  })
+
+
+
+  app.get("/api/track/coords/:api_key/", (req, res)=>{
+    console.log(request.connection.remoteAddress)
+    client_api = req.params.api_key
+    lat = req.params.lat
+    lon = req.params.lon
+
+    if(checkAPI(req.params.api_key)){
+      res.send("API end point not implemented")
+    }else{
+      res.status(400);
+      res.send('Forbidden');
+    }
+  })
 
   app.get("/api/radar/:api_key/:lat/:lon", (req, res)=>{
     client_api = req.params.api_key
@@ -16,16 +54,18 @@ module.exports = (app) => {
       .then((response) => response.blob())
       .then((blob) => {
         console.log(new Date)
-        console.log(Object.keys(blob))
+
+        // console.log(Object.keys(blob)
         res.writeHead(200, {'Content-Type': 'image/gif'})
         res.write(radar_img)
         res.end()
         //res.end(blob, 'binary')
-
+        console.log(request.connection.remoteAddress)
       }).catch(err => console.log(err.stack))
     }else{
-      res.send("INVALID API KEY\NTRY ALPO, IT'S DELICIOUS!")
-      console.log("Recieved invalid API key: " + client_api)
+      res.status(400);
+      res.send('Forbidden');
+      console.log("Recieved invalid API key: " + client_api + "\nIP: " + request.connection.remoteAddress)
 
     }
 

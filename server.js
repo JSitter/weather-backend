@@ -2,15 +2,43 @@ const express = require('express');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const fetch = require( 'node-fetch');
-fs = require('fs')
+fs = require('fs');
+var cron = require('node-cron');
 
-port = process.env.PORT || 5000
+port = process.env.PORT || 5000;
+
+let coords = [{"lat": 34, "lon":-118}]
 
 //Instantiate express
 const app = express();
 
+let i = 0;
+
+download_radar = ()=>{
+  console.log("hello friend")
+
+}
+
+function add_coords(lat, lon){
+  this.coords.push(lat, lon)
+}
+
+function get_coords(){
+  for(pair in this.coords){
+    console.log("lat" + pair["lat"])
+    console.log("longitude" + pair["lon"])
+  }
+}
+
+//dowload radar data on a 5 minute interval
+cron.schedule('*/5 * * * *', function(){
+  download_radar()
+}.bind(download_radar));
+
+
 //Add bodyParser to App to get post data
 app.use(bodyParser.urlencoded({extended: true}));
+
 
 // Load Routes
 require('./routes.js')(app);

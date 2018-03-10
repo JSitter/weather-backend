@@ -5,15 +5,16 @@ module.exports = (app, latlon) => {
 
   checkAPI = (api) =>{
     if(api === process.env.REMOTE_ACCESS_KEY){
-      return True;
+      return true;
     } else{
-      return False;
+      return false;
     }
   }
 
-  app.get("/api/locate/city/:api_key/:lat/:long", (req, res)=>{
+  app.get("/api/locate/city/:api_key/:lat/:lon", (req, res)=>{
     if(checkAPI(req.params.api_key)){
-      api_address = "https://www.googleapis.com/geolocation/v1/geolocate?key="+process.env.GOOGLE_API_KEY
+      api_address = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+req.params.lat+","+req.params.lon+"&key="+process.env.GOOGLE_API_KEY
+      console.log(api_address)
       fetch(api_address)
       .then((response)=>response.json())
       .then((json)=>res.send(json))

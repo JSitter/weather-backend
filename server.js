@@ -15,7 +15,7 @@ const app = express();
 let i = 0;
 
 download_radar = ()=>{
-  console.log("hello friend")
+  console.log("chron ran")
 
 }
 
@@ -34,7 +34,6 @@ function get_coords(){
 cron.schedule('*/5 * * * *', function(){
   download_radar()
 }.bind(download_radar));
-
 
 //Add bodyParser to App to get post data
 app.use(bodyParser.urlencoded({extended: true}));

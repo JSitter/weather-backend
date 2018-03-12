@@ -11,13 +11,64 @@ module.exports = (app, latlon) => {
     }
   }
 
-  app.get("/api/get/current/:api_key/", (req, res)=>{
-    res.send(req.connection.remoteAddress)
+  forbidden = (req, res)=>{
+    res.status(400);
+    res.send('Forbidden');
+    console.log("Forbidden request from "+ req.connection.remoteAddress)
+
+  }
+
+  app.get("/api/get/current/:api_key/:lat/:lon/:zip", (req, res)=>{
+    if(checkAPI(req.params.api_key)){
+      console.log("lat/long zip endpoing not fiknished")
+    }else{
+      forbidden(req, res)
+    }
+
   })
 
-  app.get("/api/get/current/:api_key/:lat/:lon", (req, res)=>{
-    res.send("data")
+  app.get("/api/get/current/:api_key/:state/:city/", (req, res)=>{
+    if(checkAPI(req.params.api_key)){
+
+      state = req.params.state
+      city = req.params.city
+      city = city.replace(" ", "_")
+      state = state.replace(" ", "_")
+
+      //get State and City form lat/lon add_coords
+      google_address = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+req.params.state+","+req.params.city+"&key="+process.env.GOOGLE_API_KEY
+      api_address = "http://api.wunderground.com/api/"+process.env.WEATHER_KEY+"/conditions/q/"+state+"/"+city+".json"
+
+      fetch(api_address).then((response)=>response.json())
+      .then((json)=> res.send(json))
+      // fetch(api_address).then((response)=>response.json())
+      // .then((json)=> res.send(json))
+
+    }else{
+      forbidden(req, res)
+    }
+
   })
+
+  app.get("/api/get/current/:api_key/:zip", (req, res)=>{
+    if(checkAPI(req.params.api_key)){
+      res.send("Zip code data end point not finished")
+    }else{
+      forbidden(req, res)
+    }
+
+  })
+
+  app.get("/api/get/current/:api_key/", (req, res)=>{
+    if(checkAPI(req.params.api_key)){
+      res.send(req.connection.remoteAddress)
+    }else{
+      forbidden(req, res)
+    }
+
+  })
+
+
 
   app.get("/api/locate/city/:api_key/:lat/:lon", (req, res)=>{
     if(checkAPI(req.params.api_key)){
@@ -27,9 +78,10 @@ module.exports = (app, latlon) => {
       .then((response)=>response.json())
       .then((json)=>res.send(json))
     }else{
-      res.status(400);
-      res.send('Forbidden');
+      forbidden(req, res)
     }
+
+
   })
 
   app.get("/api/track/city/:api_key/:city", (req, res)=>{
@@ -42,8 +94,7 @@ module.exports = (app, latlon) => {
         console.log(json)
       })
     }else{
-      res.status(400);
-      res.send('Forbidden');
+      forbidden(req, res)
     }
   })
 
@@ -58,8 +109,7 @@ module.exports = (app, latlon) => {
     if(checkAPI(req.params.api_key)){
       res.send("API end point not implemented")
     }else{
-      res.status(400);
-      res.send('Forbidden');
+      forbidden(req, res)
     }
   })
 
@@ -85,10 +135,7 @@ module.exports = (app, latlon) => {
         console.log(request.connection.remoteAddress)
       }).catch(err => console.log(err.stack))
     }else{
-      res.status(400);
-      res.send('Forbidden');
-      console.log("Recieved invalid API key: " + client_api + "\nIP: " + request.connection.remoteAddress)
-
+      forbidden(req, res)
     }
 
   })

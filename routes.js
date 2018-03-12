@@ -11,6 +11,14 @@ module.exports = (app, latlon) => {
     }
   }
 
+  app.get("/api/get/current/:api_key/", (req, res)=>{
+    res.send(req.connection.remoteAddress)
+  })
+
+  app.get("/api/get/current/:api_key/:lat/:lon", (req, res)=>{
+    res.send("data")
+  })
+
   app.get("/api/locate/city/:api_key/:lat/:lon", (req, res)=>{
     if(checkAPI(req.params.api_key)){
       api_address = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+req.params.lat+","+req.params.lon+"&key="+process.env.GOOGLE_API_KEY

@@ -18,6 +18,9 @@ module.exports = (app, latlon) => {
 
   }
 
+  app.get("/", (req, res)=>{
+    res.send("hello world")
+  })
   app.get("/api/get/current/:api_key/:lat/:lon/:zip", (req, res)=>{
     if(checkAPI(req.params.api_key)){
       console.log("lat/long zip endpoing not fiknished")
@@ -40,7 +43,7 @@ module.exports = (app, latlon) => {
       api_address = "http://api.wunderground.com/api/"+process.env.WEATHER_KEY+"/conditions/q/"+state+"/"+city+".json"
 
       fetch(api_address).then((response)=>response.json())
-      .then((json)=> res.send(json))
+      .then((json)=> res.json(json))
       // fetch(api_address).then((response)=>response.json())
       // .then((json)=> res.send(json))
 
@@ -76,7 +79,10 @@ module.exports = (app, latlon) => {
       console.log(api_address)
       fetch(api_address)
       .then((response)=>response.json())
-      .then((json)=>res.send(json))
+      .then((json)=>{
+        console.log(json)
+        res.json(json)
+      })
     }else{
       forbidden(req, res)
     }

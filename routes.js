@@ -81,7 +81,7 @@ module.exports = (app, latlon) => {
       .then((response)=>response.json())
       .then((json)=>{
         console.log(json)
-        res.json(json)
+        res.send(json)
       })
     }else{
       forbidden(req, res)
